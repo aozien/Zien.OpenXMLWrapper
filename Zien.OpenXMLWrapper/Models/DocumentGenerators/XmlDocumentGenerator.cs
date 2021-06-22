@@ -7,7 +7,7 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
     class XmlDocumentGenerator : IDocumentGenerator<SpreadsheetDocument>
     {
-        SpreadsheetDocument IDocumentGenerator<SpreadsheetDocument>.GenerateDocument()
+        SpreadsheetDocument IDocumentGenerator<SpreadsheetDocument>.GenerateDocument(ExcelFile fileModel)
         {
             throw new NotImplementedException();
         }
