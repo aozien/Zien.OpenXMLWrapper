@@ -78,11 +78,16 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             }
             return this;
         }
-        public WorkSheet AppendCellFormula(string formula, ContentTypeEnum cellContentType, params string[] values) {
+        public WorkSheet AppendCellFormula(ContentTypeEnum cellContentType, params string[] formulas)
+        {
+            return this.AppendCellFormula(DefaultFormatting, cellContentType, formulas);
+        }
+        public WorkSheet AppendCellFormula(string styleName, ContentTypeEnum cellContentType, params string[] formulas)
+        {
             Row currentRow = this.LastRow;
-            for (int i = 0; i < values.Length; i++)
+            for (int i = 0; i < formulas.Length; i++)
             {
-                var cell = new Cell(values[i], formula, cellContentType);
+                var cell = new Cell(formulas[i], styleName, cellContentType);
                 cell.IsFormula = true;
                 currentRow.Cells.Add(cell);
             }
