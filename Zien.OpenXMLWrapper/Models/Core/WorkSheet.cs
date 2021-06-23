@@ -10,13 +10,20 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
     //TODO: Support Adding Images
     public partial class WorkSheet
     {
-        public WorkSheet()
-        {
-            Columns = new List<Column>();
-            Rows = new List<Row>();
-            Styles = new Dictionary<string, CellFormatting>();
-            MergedRanges = new List<RangeName>();
+        internal WorkSheet(string sheetName, uint sheetId) : this() {
+            if (String.IsNullOrEmpty(sheetName)) throw new ArgumentNullException(nameof(sheetName),"Sheet Name Can't be Null");
+            this.SheetName = sheetName;
+            this.Id = sheetId;
         }
+        private WorkSheet()
+        {
+            this.Columns = new List<Column>();
+            this.Rows = new List<Row>();
+            this.Styles = new Dictionary<string, CellFormatting>();
+            this.MergedRanges = new List<RangeName>();
+        }
+        public uint Id { get; private set; }
+        public string SheetName { get; set; }
         public List<Column> Columns { get; private set; }
         public List<Row> Rows { get; private set; }
         public List<RangeName> MergedRanges { get; private set; }

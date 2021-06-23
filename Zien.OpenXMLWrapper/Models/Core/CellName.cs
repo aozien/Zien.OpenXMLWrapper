@@ -7,7 +7,7 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
     public struct CellName 
     {
-        public CellName(string cellName, bool isFormula = false)
+        public CellName(string cellName)
         {
             int indexOfRowNumber = cellName.IndexOfAny("0123456789".ToCharArray());
             int columnNameLength = indexOfRowNumber;
@@ -20,21 +20,18 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
 
             Column = column;
             Row = row;
-            IsFormula = isFormula;
         }
 
-        public CellName(string column, int row, bool isFormula = false)
+        public CellName(string column, int row)
         {
             Column = column;
             Row = row;
-            IsFormula = isFormula;
         }
 
         public string Column { get; }
         public int ColumnIndex => ColumnNameToNumber(Column);
         public int Row { get; }
         public string Value => this.ToString();
-        public bool IsFormula { get; set; }
         public override string ToString()
         {
             return Column + Row.ToString();

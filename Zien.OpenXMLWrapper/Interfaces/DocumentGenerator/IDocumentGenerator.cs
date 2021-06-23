@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
-    interface IDocumentGenerator<TResult>
+    internal interface IDocumentGenerator<TResult>
     {
-        TResult GenerateDocument(ExcelFile fileModel);
+        void GenerateDocument(ExcelFile fileModel, string filePath);
+        void GenerateDocumentInMemory(ExcelFile fileModel, ref MemoryStream memoryStream);
     }
 }
