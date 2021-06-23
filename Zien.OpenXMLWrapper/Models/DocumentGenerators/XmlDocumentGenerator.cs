@@ -8,13 +8,13 @@ using System.Text;
 
 namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
-    internal class XmlDocumentGenerator : IDocumentGenerator<SpreadsheetDocument>
+    internal class XmlDocumentGenerator : IDocumentGenerator<ExcelFile>
     {
-        void IDocumentGenerator<SpreadsheetDocument>.GenerateDocument(ExcelFile fileModel, string filePath)
+        void IDocumentGenerator<ExcelFile>.GenerateDocument(ExcelFile fileModel, string filePath)
         {
             throw new NotImplementedException();
         }
-        void IDocumentGenerator<SpreadsheetDocument>.GenerateDocumentInMemory(ExcelFile fileModel, ref MemoryStream memoryStream)
+        void IDocumentGenerator<ExcelFile>.GenerateDocument(ExcelFile fileModel, ref MemoryStream memoryStream)
         {
             //TODO: Validate Model Before creating documents
             using (SpreadsheetDocument document = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
@@ -81,7 +81,6 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             //TODO: Assign Style index as well before returning result.
             return newCell;
         }
-
         private MergeCells CreateMergedCells(List<RangeName> mergedRanges)
         {
             MergeCells mergeCells = new MergeCells();
@@ -92,7 +91,6 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             }
             return mergeCells;
         }
-
         private Stylesheet ExtractStyleSheetFromModel()
         {
             return new Stylesheet();

@@ -5,7 +5,7 @@ using Zien.OpenXMLPowerToolsWrapper.Enums;
 
 namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
-    class DocumentGeneratorsFactory
+    internal class DocumentGeneratorsFactory
     {
         private static Dictionary<DocumentGeneratorType, Type> generatorTable => new Dictionary<DocumentGeneratorType, Type>
         {
