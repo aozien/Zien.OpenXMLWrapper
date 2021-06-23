@@ -12,31 +12,45 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
     {
         void IDocumentGenerator<ExcelFile>.GenerateDocument(ExcelFile fileModel, string filePath)
         {
-            throw new NotImplementedException();
+            using (SpreadsheetDocument document = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
+            {
+                this.GenerateDocument(fileModel, document);
+            }
         }
         void IDocumentGenerator<ExcelFile>.GenerateDocument(ExcelFile fileModel, ref MemoryStream memoryStream)
         {
             //TODO: Validate Model Before creating documents
             using (SpreadsheetDocument document = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
             {
-                var workbookPart = document.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
-                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                var stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
-                stylePart.Stylesheet = ExtractStyleSheetFromModel();
-                stylePart.Stylesheet.Save();
+                this.GenerateDocument(fileModel, document);
+            }
+        }
+        private void GenerateDocument(ExcelFile fileModel, SpreadsheetDocument document)
+        {
+            var workbookPart = document.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
+            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+            var stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
+            stylePart.Stylesheet = ExtractStyleSheetFromModel();
+            stylePart.Stylesheet.Save();
 
-                for (int i = 0; i < fileModel.Sheets.Count; i++)
-                {
-                    WorkSheet currentSheet = fileModel.Sheets[i];
-                    this.AddSheetToWorkbook(currentSheet, ref workbookPart);
-                }
+            for (int i = 0; i < fileModel.Sheets.Count; i++)
+            {
+                WorkSheet currentSheet = fileModel.Sheets[i];
+                this.AddSheetToWorkbook(currentSheet, ref workbookPart);
             }
         }
         private void AddSheetToWorkbook(WorkSheet workSheet, ref WorkbookPart workbookPart)
         {
             WorksheetPart newWorksheetPart = workbookPart.AddNewPart<WorksheetPart>();
             newWorksheetPart.Worksheet = new Worksheet();
+            var sheetFormatProperties = new SheetFormatProperties
+            {
+                DefaultColumnWidth = workSheet.DefaultColumnWidth,
+                DefaultRowHeight = 20D,
+            };
+            newWorksheetPart.Worksheet.Append(sheetFormatProperties);
+
             Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>();
             string relationshipId = workbookPart.GetIdOfPart(newWorksheetPart);
             uint sheetId = workSheet.Id;
@@ -45,16 +59,18 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             sheets.Append(sheet);
             workbookPart.Workbook.Save();
             
-            SheetData sheetData = sheet.AppendChild(new SheetData());
+            SheetData sheetData = newWorksheetPart.Worksheet.AppendChild(new SheetData());
             foreach (var row in workSheet.Rows)
             {
                 this.AddRowToSheet(row, ref sheetData);
             }
             newWorksheetPart.Worksheet.Save();
-
-            MergeCells mergeCells = CreateMergedCells(workSheet.MergedRanges);
-            newWorksheetPart.Worksheet.InsertAfter(mergeCells, sheetData);
-            newWorksheetPart.Worksheet.Save();
+            if (workSheet.MergedRanges.Count != 0)
+            {
+                MergeCells mergeCells = CreateMergedCells(workSheet.MergedRanges);
+                newWorksheetPart.Worksheet.InsertAfter(mergeCells, sheetData);
+                newWorksheetPart.Worksheet.Save();
+            }
         }
         private void AddRowToSheet(Row row, ref SheetData sheetData)
         {
@@ -93,7 +109,8 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
         }
         private Stylesheet ExtractStyleSheetFromModel()
         {
-            return new Stylesheet();
+            var styleSheet = new Stylesheet();
+            return styleSheet;
         }
     }
 }

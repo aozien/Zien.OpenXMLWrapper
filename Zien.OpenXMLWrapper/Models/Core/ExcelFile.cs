@@ -16,7 +16,9 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
         public List<WorkSheet> Sheets { get; private set; }
         public WorkSheet AddWorksheet(string worksheetName)
         {
-            var newWorksheetId = (uint)Sheets.Count;
+            var newWorksheetId = (uint) Sheets.Count+ 1;
+            if (String.IsNullOrEmpty(worksheetName))
+                worksheetName = $"Sheet {newWorksheetId}";
             var newWorksheet = new WorkSheet(worksheetName, newWorksheetId);
             this.Sheets.Add(newWorksheet);
             return newWorksheet;

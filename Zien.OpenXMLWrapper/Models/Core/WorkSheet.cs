@@ -10,13 +10,15 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
     //TODO: Support Adding Images
     public partial class WorkSheet
     {
-        internal WorkSheet(string sheetName, uint sheetId) : this() {
-            if (String.IsNullOrEmpty(sheetName)) throw new ArgumentNullException(nameof(sheetName),"Sheet Name Can't be Null");
-            this.SheetName = sheetName;
+        internal WorkSheet(string sheetName, uint sheetId) : this()
+        {
+            if (String.IsNullOrEmpty(sheetName)) throw new ArgumentNullException(nameof(sheetName), "Sheet Name Can't be Null");
             this.Id = sheetId;
+            this.SheetName = sheetName;
         }
         private WorkSheet()
         {
+            this.DefaultColumnWidth = 15;
             this.Columns = new List<Column>();
             this.Rows = new List<Row>();
             this.Styles = new Dictionary<string, CellFormatting>();
@@ -24,6 +26,7 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
         }
         public uint Id { get; private set; }
         public string SheetName { get; set; }
+        public int DefaultColumnWidth { get; set; }
         public List<Column> Columns { get; private set; }
         public List<Row> Rows { get; private set; }
         public List<RangeName> MergedRanges { get; private set; }
@@ -40,38 +43,47 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
         public int CurrentRowIndex => Rows.Count;
         public WorkSheet AppendRow(ContentTypeEnum cellContentType, params string[] values)
         {
-            return this.AppendRow(cellContentType, DefaultFormatting, values);
+            return this.AppendRow(DefaultFormatting, cellContentType, values);
         }
-        public WorkSheet AppendRow(ContentTypeEnum cellContentType, string styleName, params string[] values)
+        public WorkSheet AppendRow(string styleName, ContentTypeEnum cellContentType, params string[] values)
+        {
+            return this.AppendRow()
+                       .AppendCells(styleName, cellContentType, values);
+        }
+        public WorkSheet AppendRow()
         {
             var newRow = new Row();
-            for (int i = 0; i < values.Length; i++)
-            {
-                var cell = new Cell(values[i], styleName, cellContentType);
-
-                newRow.Cells.Add(cell);
-            }
             Rows.Add(newRow);
             return this;
         }
         public WorkSheet AppendCells(ContentTypeEnum cellContentType, params object[] values)
         {
-            return AppendCells(cellContentType, DefaultFormatting, values.Select(x => x.ToString()).ToArray());
+            return AppendCells(DefaultFormatting, cellContentType, values.Select(x => x.ToString()).ToArray());
         }
-        public WorkSheet AppendCells(ContentTypeEnum cellContentType, params string[] values)
+        private WorkSheet AppendCells(ContentTypeEnum cellContentType, params string[] values)
         {
-            return AppendCells(cellContentType, DefaultFormatting, values);
+            return AppendCells(DefaultFormatting, cellContentType, values);
         }
-        public WorkSheet AppendCells(ContentTypeEnum cellContentType, string styleName, params object[] values)
+        public WorkSheet AppendCells(string styleName, ContentTypeEnum cellContentType, params object[] values)
         {
             return AppendCells(cellContentType, styleName, values.Select(x => x.ToString()).ToArray());
         }
-        public WorkSheet AppendCells(ContentTypeEnum cellContentType, string styleName, params string[] values)
+        private WorkSheet AppendCells(string styleName, ContentTypeEnum cellContentType, params string[] values)
         {
             Row currentRow = this.LastRow;
             for (int i = 0; i < values.Length; i++)
             {
                 var cell = new Cell(values[i], styleName, cellContentType);
+                currentRow.Cells.Add(cell);
+            }
+            return this;
+        }
+        public WorkSheet AppendCellFormula(string formula, ContentTypeEnum cellContentType, params string[] values) {
+            Row currentRow = this.LastRow;
+            for (int i = 0; i < values.Length; i++)
+            {
+                var cell = new Cell(values[i], formula, cellContentType);
+                cell.IsFormula = true;
                 currentRow.Cells.Add(cell);
             }
             return this;
