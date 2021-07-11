@@ -7,7 +7,7 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
     internal interface IDocumentGenerator<TResult>
     {
-        void GenerateDocument(TResult fileModel, string filePath);
-        void GenerateDocument(TResult fileModel, ref MemoryStream memoryStream);
+        void GenerateDocument(string filePath);
+        void GenerateDocument(ref MemoryStream memoryStream);
     }
 }

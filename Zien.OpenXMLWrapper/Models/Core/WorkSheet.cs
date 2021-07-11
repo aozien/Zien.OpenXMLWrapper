@@ -10,6 +10,7 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
     //TODO: Support Adding Images
     public partial class WorkSheet
     {
+        #region CTORs
         internal WorkSheet(string sheetName, uint sheetId) : this()
         {
             if (String.IsNullOrEmpty(sheetName)) throw new ArgumentNullException(nameof(sheetName), "Sheet Name Can't be Null");
@@ -24,6 +25,9 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             this.Styles = new Dictionary<string, CellFormatting>();
             this.MergedRanges = new List<RangeName>();
         }
+        #endregion
+
+        #region Properties
         public uint Id { get; private set; }
         public string SheetName { get; set; }
         public int DefaultColumnWidth { get; set; }
@@ -41,6 +45,9 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             }
         }
         public int CurrentRowIndex => Rows.Count;
+        #endregion
+
+        #region Methods
         public WorkSheet AppendRow(ContentTypeEnum cellContentType, params string[] values)
         {
             return this.AppendRow(DefaultFormatting, cellContentType, values);
@@ -93,7 +100,7 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
             }
             return this;
         }
-        public void AddNewStyle(CellFormatting newStyle)
+        public WorkSheet AddNewStyle(CellFormatting newStyle)
         {
             if (String.IsNullOrEmpty(newStyle.StyleName))
                 throw new ArgumentException("the new style name can't be null or empty", nameof(newStyle));
@@ -102,28 +109,70 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
                 throw new ArgumentException("the new style name already exists, use another name for your style, or remove existing", nameof(newStyle));
 
             Styles.Add(newStyle.StyleName, newStyle);
+
+            return this;
         }
-        public void RemoveStyle(string styleName)
+        public WorkSheet RemoveStyle(string styleName)
         {
             if (String.IsNullOrEmpty(styleName))
                 throw new ArgumentException("the new style name can't be null or empty", nameof(styleName));
             if (Styles.ContainsKey(styleName))
                 Styles.Remove(styleName);
+
+            return this;
         }
-        public void MergeRange(string rangeName)
+        public WorkSheet MergeRange(string rangeName)
         {
             this.MergeRange(new RangeName(rangeName));
+            return this;
         }
-        public void MergeRange(RangeName rangeName)
+        public WorkSheet MergeRange(RangeName rangeName)
         {
             //TODO: Might want to check if it overlaps with existing merged ranges before adding it
             if (!MergedRanges.Contains(rangeName))
                 MergedRanges.Add(rangeName);
+
+            return this;
         }
-        public void UnmergeRange(RangeName rangeName)
+        public WorkSheet UnmergeRange(RangeName rangeName)
         {
             if (MergedRanges.Contains(rangeName))
                 MergedRanges.Remove(rangeName);
+
+            return this;
         }
+
+        public WorkSheet AppendColumns(int numberOfColumns)
+        {
+            for (int i = 0; i < numberOfColumns; i++)
+                this.Columns.Add(new Column(this.DefaultColumnWidth));
+           
+            return this;
+        }
+        public WorkSheet RemoveColumns(params int[] columnsIndices)
+        {
+            var columnsIndicesSorted = columnsIndices.OrderByDescending(v => v);
+            foreach (int index in columnsIndicesSorted)
+                this.Columns.RemoveAt(index);
+
+            return this;
+        }
+
+        public WorkSheet SetColumnsVisibility(bool visible, params int[] columnsIndices)
+        {
+            foreach (int index in columnsIndices)
+                this.Columns[index].Hidden = !visible;
+
+            return this;
+        }
+        public WorkSheet SetColumnsWidth(int width, params int[] columnsIndices)
+        {
+            foreach (int index in columnsIndices)
+                this.Columns[index].Width = width;
+           
+            return this;
+        }
+
+        #endregion
     }
 }

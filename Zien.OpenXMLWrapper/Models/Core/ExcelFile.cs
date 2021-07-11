@@ -26,14 +26,14 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
         public void GenerateDocument(string filePath, DocumentGeneratorType documentGeneratorType = DocumentGeneratorType.XmlDocument)
         {
             var factory = new DocumentGeneratorsFactory(documentGeneratorType);
-            factory.GetDocumentGenerator<ExcelFile>()
-                   .GenerateDocument(this, filePath);
+            factory.GetDocumentGenerator<ExcelFile>(this)
+                   .GenerateDocument(filePath);
         }
         public void GenerateDocument(ref MemoryStream memoryStream, DocumentGeneratorType documentGeneratorType = DocumentGeneratorType.XmlDocument)
         {
             var factory = new DocumentGeneratorsFactory(documentGeneratorType);
-            factory.GetDocumentGenerator<ExcelFile>()
-                   .GenerateDocument(this, ref memoryStream);
+            factory.GetDocumentGenerator<ExcelFile>(this)
+                   .GenerateDocument(ref memoryStream);
         }
     }
 

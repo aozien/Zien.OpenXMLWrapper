@@ -6,8 +6,12 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
     public class Column : Range
     {
-        //-- hide
-        public bool Hidden { get; private set; }
+        public Column(int width)
+        {
+            this.Width = width;
+            this.Hidden = false;
+        }
+        public bool Hidden { get; set; }
         public int Width { get; set; }
 
         //-- Get cell

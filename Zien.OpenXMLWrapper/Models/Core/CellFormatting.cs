@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Zien.OpenXMLPowerToolsWrapper.Models.Core.Formatting;
 
 namespace Zien.OpenXMLPowerToolsWrapper.Models
 {
-    public class CellFormatting : ICloneable
+    public class CellFormatting 
     {
         public CellFormatting(string styleName)
         {
@@ -12,11 +13,34 @@ namespace Zien.OpenXMLPowerToolsWrapper.Models
         }
         public static CellFormatting DefaultFormatting { get; set; }
         public string StyleName { get; set; }
-        //borders {four borders and diagonal}/ font {size,color}/ 
 
-        public object Clone()
-        {
-            return new CellFormatting(StyleName);
-        }
+
+        #region Fill Formats
+
+        public PatternValuesEnum BackgroundPattern { get; set; }
+        public string BackgroundColor { get; set; }
+
+        #endregion
+
+
+        #region Alignment Formats
+
+        public HorizontalAlignmentValuesEnum HorizontalAlignment { get; set; }
+        public VerticalAlignmentValuesEnum VerticalAlignment { get; set; }
+        public bool WrapText { get; set; }
+
+        #endregion
+
+
+        #region Font Formats
+
+        public bool IsBold { get; set; }
+        public bool IsItalic { get; set; }
+        public int Size { get; set; }
+        public string Color { get; set; }
+
+        #endregion
+
+
     }
 }
